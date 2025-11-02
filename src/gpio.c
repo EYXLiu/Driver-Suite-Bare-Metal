@@ -1,6 +1,32 @@
 #include "gpio.h"
 
-void gpio_init(uint8_t pin, gpio_mode_t mode) {
+#include <stdlib.h>
+
+#define IO_BANK0_BASE ((uintptr_t)0x40014000)
+#define SIO_BASE 0xD0000000u
+
+#define GPIO_CTRL(n) (*(volatile uint32_t*)(IO_BANK0_BASE + ((n) * 0x8) + 0x4))
+#define GPIO_FUNC_SIO 5u
+
+#define SIO_GPIO_OUT (*(volatile uint32_t*)(SIO_BASE + 0x10))
+#define SIO_GPIO_OUT_XOR (*(volatile uint32_t*)(SIO_BASE + 0x1C))
+#define SIO_GPIO_IN (*(volatile uint32_t*)(SIO_BASE + 0x04))
+#define SIO_GPIO_OE (*(volatile uint32_t*)(SIO_BASE + 0x20))
+
+struct gpio_inst_t {
+    uint8_t pin;
+    gpio_mode_t mode;
+    gpio_pull_t pull;
+};
+
+gpio_t *gpio_init(uint8_t pin, gpio_mode_t mode) {
+    gpio_t *gpio = malloc(sizeof(gpio_t));
+    if (!gpio) return NULL;
+
+    gpio->pin = pin;
+    gpio->mode = mode;
+    gpio->pull = GPIO_PULL_NONE;
+
     GPIO_CTRL(pin) = GPIO_FUNC_SIO;
 
     if (mode == GPIO_MODE_OUTPUT) {
@@ -8,34 +34,41 @@ void gpio_init(uint8_t pin, gpio_mode_t mode) {
     } else {
         SIO_GPIO_OE &= ~(1u << pin);
     }
+
+    return gpio;
 }
 
-void gpio_write(uint8_t pin, gpio_value_t value) {
+void gpio_write(gpio_t *gpio, gpio_value_t value) {
     if (value == GPIO_LOW) {
-        SIO_GPIO_OUT |= (1u << pin);
+        SIO_GPIO_OUT |= (1u << gpio->pin);
     } else {
-        SIO_GPIO_OUT &= ~(1u << pin);
+        SIO_GPIO_OUT &= ~(1u << gpio->pin);
     }
 }
 
-uint8_t gpio_read(uint8_t pin) {
-    return (SIO_GPIO_IN & (1u << pin)) != 0;
+uint8_t gpio_read(gpio_t *gpio) {
+    return (SIO_GPIO_IN & (1u << gpio->pin)) != 0;
 }
 
-void gpio_toggle(uint8_t pin) {
-    SIO_GPIO_OUT_XOR = (1u << pin);
+void gpio_toggle(gpio_t *gpio) {
+    SIO_GPIO_OUT_XOR = (1u << gpio->pin);
 }
 
-void gpio_set_pull(uint8_t pin, gpio_pull_t pull) {
-    uint32_t reg = GPIO_CTRL(pin) & ~0x03;
+void gpio_set_pull(gpio_t *gpio, gpio_pull_t pull) {
+    uint32_t reg = GPIO_CTRL(gpio->pin) & ~0x03;
     switch (pull) {
         case GPIO_PULL_NONE: break;
         case GPIO_PULL_UP: reg |= 1; break;
         case GPIO_PULL_DOWN: reg |= 2; break;
     }
-    GPIO_CTRL(pin) = reg;
+    GPIO_CTRL(gpio->pin) = reg;
+    gpio->pull = pull;
 }
 
-void gpio_set_func(uint8_t pin, gpio_func_t func) {
-    GPIO_CTRL(pin) = (uint32_t)func;
+void gpio_set_func(gpio_t *gpio, gpio_func_t func) {
+    GPIO_CTRL(gpio->pin) = (uint32_t)func;
+}
+
+void gpio_free(gpio_t *gpio) {
+    if (gpio) free(gpio);
 }

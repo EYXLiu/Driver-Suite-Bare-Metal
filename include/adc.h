@@ -4,15 +4,17 @@
 #include <stdint.h>
 #include <stddef.h>
 
-void adc_config(uint32_t channel);
-void adc_select_channel(uint32_t channel);
+typedef struct adc_inst_t adc_t;
 
-uint16_t adc_read_value(void);
-uint16_t adc_read_channel(uint32_t channel);
-uint16_t adc_read_avg(uint32_t channel, uint8_t samples);
-float adc_read_voltage(uint32_t channel);
+adc_t *adc_config(uint32_t channel);
 
-float adc_read_temp(void);
-float adc_read_vref(void);
+uint16_t adc_read_value(adc_t *adc);
+uint16_t adc_read_avg(adc_t *adc, uint8_t samples);
+float adc_read_voltage(adc_t *adc, float vref);
+
+float adc_read_temp(adc_t *adc);
+float adc_read_vref(adc_t *adc);
+
+void adc_free(adc_t *adc);
 
 #endif

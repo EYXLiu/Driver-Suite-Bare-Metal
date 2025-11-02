@@ -1,26 +1,23 @@
 #ifndef PWM_H
 #define PWM_H
 
-#include "pico/stdlib.h"
+#include <stdint.h>
+#include <stdbool.h>
 
-void pwm_config_init(uint pin, uint freq_hz);
+typedef struct pwm_inst_t pwm_t;
 
-uint16_t pwm_get_wrap(uint pin);
+pwm_t *pwm_config_init(uint8_t pin, uint32_t freq_hz);
 
-uint16_t pwm_get_chan_level_pin(uint pin);
-uint16_t pwm_get_chan_level(uint slice_num, uint channel);
+uint32_t pwm_get_wrap(pwm_t *pwm);
 
-float pwm_get_clkdiv_pin(uint pin);
-float pwm_get_clkdiv(uint slice_num);
+void pwm_set_freq(pwm_t *pwm, uint32_t freq_hz);
 
-void pwm_set_duty(uint pin, float duty_percent);
-void pwm_get_duty(uint pin);
+float pwm_get_duty(pwm_t *pwm);
+void pwm_set_duty (pwm_t *pwm, float duty_percent);
 
-void pwm_set_freq(uint pin, uint freq_hz);
+void pwm_enable_pin(pwm_t *pwm);
+void pwm_disable_pin(pwm_t *pwm);
 
-void pwm_enable_pin(uint pin);
-void pwm_disable_pin(uint pin);
-
-void pwm_set_raw(uint slice_num, uint16_t wrap, uint16_t level);
+void pwm_free(pwm_t *pwm);
 
 #endif
