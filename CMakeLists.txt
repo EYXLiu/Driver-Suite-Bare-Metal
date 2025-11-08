@@ -7,6 +7,7 @@ add_executable(driver_suite
     src/gpio.c
     src/timer.c
     src/uart.c
+    src/spi.c
 )
 
 target_include_directories(driver_suite PRIVATE include)

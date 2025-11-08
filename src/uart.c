@@ -1,8 +1,9 @@
 #include "uart.h"
+#include "gpio.h"
 #include <stdlib.h>
 
-#define UART0_BASE 0x4003400u
-#define UART1_BASE 0x4003800u
+#define UART0_BASE 0x40034000u
+#define UART1_BASE 0x40038000u
 
 #define UART0 ((volatile uart_inst_t *)UART0_BASE)
 #define UART1 ((volatile uart_inst_t *)UART1_BASE)
@@ -17,10 +18,6 @@
 
 #define UART_CLK 12000000u
 
-#define GPIO_FUNC_UART 2
-
-extern void gpio_set_func(gpio_t *gpio, uint8_t func);
-
 struct uart_inst_t {
     volatile uint32_t *CR;
     volatile uint32_t *IBRD;
@@ -28,11 +25,11 @@ struct uart_inst_t {
     volatile uint32_t *LCRH;
     volatile uint32_t *FR;
     volatile uint32_t *DR;
-    gpio_t *tx_pin;
-    gpio_t *rx_pin;
+    uint8_t tx_pin;
+    uint8_t rx_pin;
 };
 
-uart_t *uart_init(gpio_t *tx_pin, gpio_t *rx_pin, uint32_t baudrate) {
+uart_t *uart_init(uint8_t tx_pin, uint8_t rx_pin, uint32_t baudrate) {
     uart_t* uart = malloc(sizeof(uart_t));
     if (!uart) return NULL;
 

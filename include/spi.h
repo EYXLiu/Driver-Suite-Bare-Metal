@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+typedef struct gpio_inst_t gpio_t;
 typedef struct spi_inst_t spi_t;
 
 spi_t *spi_init(uint8_t sck_pin, uint8_t mosi_pin, uint8_t miso_pin, uint8_t cs_pin, uint32_t baudrate, uint8_t spi_mode);
