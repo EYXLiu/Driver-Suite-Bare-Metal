@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-void sleep_ms(uint32_t ms);
-void sleep_us(uint32_t us);
+void sleep_ms(uint64_t ms);
+void sleep_us(uint64_t us);
 
 uint64_t timer_get_ms(void);
 uint64_t timer_get_us(void);

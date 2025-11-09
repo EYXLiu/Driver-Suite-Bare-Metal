@@ -1,10 +1,8 @@
 #include "spi.h"
 #include "gpio.h"
+#include "addressmap.h"
 #include <stdlib.h>
 #include <stdint.h>
-
-#define SPI0_BASE 0x4003C000u
-#define SPI1_BASE 0x40040000u
 
 #define SPI_CR0_OFFSET 0x00
 #define SPI_CR1_OFFSET 0x04
@@ -24,7 +22,7 @@
 
 #define SPI_CLK 12000000u
 
-typedef struct spi_inst_t {
+struct spi_inst_t {
     volatile uint32_t *base;
     uint8_t sck_pin;
     uint8_t mosi_pin;
@@ -32,7 +30,7 @@ typedef struct spi_inst_t {
     uint8_t cs_pin;
     uint32_t baudrate;
     uint8_t mode;
-} spi_t;
+};
 
 spi_t *spi_init(uint8_t sck_pin, uint8_t mosi_pin, uint8_t miso_pin, uint8_t cs_pin, uint32_t baudrate, uint8_t spi_mode) {
     spi_t *spi = malloc(sizeof(spi_t));

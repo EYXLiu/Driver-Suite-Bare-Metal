@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct gpio_inst_t gpio_t;
 typedef struct uart_inst_t uart_t;
 
 uart_t *uart_init(uint8_t tx_pin, uint8_t rx_pin, uint32_t baudrate);

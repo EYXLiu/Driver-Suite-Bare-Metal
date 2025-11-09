@@ -1,9 +1,8 @@
 #include "uart.h"
 #include "gpio.h"
+#include "addressmap.h"
 #include <stdlib.h>
-
-#define UART0_BASE 0x40034000u
-#define UART1_BASE 0x40038000u
+#include <stdint.h>
 
 #define UART0 ((volatile uart_inst_t *)UART0_BASE)
 #define UART1 ((volatile uart_inst_t *)UART1_BASE)

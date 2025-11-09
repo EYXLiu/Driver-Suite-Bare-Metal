@@ -1,14 +1,14 @@
 #include "timer.h"
+#include "addressmap.h"
 
-#define TIMER_BASE 0x40054000u
 #define TIMER_TIMERAWL (*(volatile uint32_t*)(TIMER_BASE + 0x0))
 #define TIMER_TIMERAWH (*(volatile uint32_t*)(TIMER_BASE + 0x4))
 
-void sleep_ms(uint32_t ms) {
+void sleep_ms(uint64_t ms) {
     sleep_us(ms * 1000);
 }
 
-void sleep_us(uint32_t us) {
+void sleep_us(uint64_t us) {
     uint64_t start = timer_get_us();
     while ((timer_get_us() - start) < us);
 }
@@ -23,6 +23,7 @@ uint64_t timer_get_ms(void) {
 
     return ((uint64_t)hi << 32) | lo2;
 }
+
 uint64_t timer_get_us(void) {
     return timer_get_ms() / 1000;
 }

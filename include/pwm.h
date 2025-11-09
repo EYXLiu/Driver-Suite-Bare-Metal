@@ -6,7 +6,7 @@
 
 typedef struct pwm_inst_t pwm_t;
 
-pwm_t *pwm_config_init(uint8_t pin, uint32_t freq_hz);
+pwm_t *pwm_init(uint8_t pin, uint32_t freq_hz);
 
 uint32_t pwm_get_wrap(pwm_t *pwm);
 

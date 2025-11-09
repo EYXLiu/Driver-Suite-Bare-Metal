@@ -8,6 +8,8 @@ add_executable(driver_suite
     src/timer.c
     src/uart.c
     src/spi.c
+    src/i2c.c
+    src/pwm.c
 )
 
 target_include_directories(driver_suite PRIVATE include)

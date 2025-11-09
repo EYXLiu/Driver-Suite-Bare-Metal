@@ -6,7 +6,7 @@
 
 typedef struct adc_inst_t adc_t;
 
-adc_t *adc_config(uint32_t channel);
+adc_t *adc_init(uint32_t channel);
 
 uint16_t adc_read_value(adc_t *adc);
 uint16_t adc_read_avg(adc_t *adc, uint8_t samples);

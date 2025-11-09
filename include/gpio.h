@@ -23,7 +23,10 @@ typedef enum {
 typedef enum {
     GPIO_FUNC_XPI = 0,
     GPIO_FUNC_UART = 1, 
-    GPIO_FUNC_SPI = 2
+    GPIO_FUNC_SPI = 2,
+    GPIO_FUNC_I2C = 3,
+    GPIO_FUNC_PWM = 4,
+    GPIO_FUNC_SIO = 5
 } gpio_func_t;
 
 typedef struct gpio_inst_t gpio_t;
@@ -38,6 +41,7 @@ void gpio_toggle(gpio_t *gpio);
 void gpio_set_pull(gpio_t *gpio, gpio_pull_t pull);
 
 void gpio_set_func(uint8_t pin, gpio_func_t func);
+gpio_func_t gpio_get_func(uint8_t pin);
 
 void gpio_free(gpio_t *gpio);
 

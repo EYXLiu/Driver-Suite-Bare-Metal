@@ -1,0 +1,21 @@
+#ifndef ADDRESSMAP_H
+#define ADDRESSMAP_H
+
+#define IO_BANK0_BASE ((uintptr_t)0x40014000)
+#define PADS_BANK0_BASE ((uintptr_t)0x4001C000)
+#define SIO_BASE 0xD0000000u
+
+#define UART0_BASE 0x40034000u
+#define UART1_BASE 0x40038000u
+
+#define SPI0_BASE 0x4003C000u
+#define SPI1_BASE 0x40040000u
+
+#define I2C0_BASE 0x40044000u
+#define I2C1_BASE 0x40048000u
+
+#define PWM_BASE ((uintptr_t)0x40050000u)
+
+#define TIMER_BASE 0x40054000u
+
+#endif

@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-int dma_config(bool high_priority);
+int dma_init(bool high_priority);
 
 void dma_start_transfer(uint8_t chan, const void *src, void *dst, uint32_t count);
 bool dma_is_busy(uint8_t chan);
