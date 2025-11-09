@@ -13,6 +13,7 @@ add_executable(driver_suite
     src/adc.c
     src/dma.c
     src/system.c
+    src/irq.c
 )
 
 target_include_directories(driver_suite PRIVATE include)

@@ -6,8 +6,10 @@
 #include <stdbool.h>
 
 typedef struct spi_inst_t spi_t;
+typedef void (*spi_rx_callback_t)(uint8_t data);
+typedef void (*spi_tx_callback_t)(void);
 
-spi_t *spi_init(uint8_t sck_pin, uint8_t mosi_pin, uint8_t miso_pin, uint8_t cs_pin, uint32_t baudrate, uint8_t spi_mode);
+spi_t *spi_init(uint8_t sck_pin, uint8_t mosi_pin, uint8_t miso_pin, uint8_t cs_pin, uint32_t baudrate, uint8_t spi_mode, spi_rx_callback_t rx_callback, spi_tx_callback_t tx_callback);
 
 void spi_select(spi_t *spi);
 void spi_deselect(spi_t *spi);

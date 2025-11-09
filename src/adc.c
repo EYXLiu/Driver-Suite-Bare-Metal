@@ -1,5 +1,6 @@
 #include "adc.h"
 #include "gpio.h"
+#include "irq.h"
 #include "addressmap.h"
 #include <stdlib.h>
 #include <stdint.h>
@@ -12,17 +13,25 @@
 #define ADC_CS_READY (1 << 3)
 #define ADC_CS_AINSEL_MASK 0xF
 
+#define ADC_CS_IRQ_EN (1 << 4)
+#define ADC_CS_FIFO_EN (1 << 0)
+#define ADC_IRQ_FIFO_NUM 22
+
 struct adc_inst_t {
     uint8_t channel;
+    adc_callback_t callback;
 };
 
-adc_t *adc_init(uint8_t channel) {
+static adc_t *adc_ptr;
+
+adc_t *adc_init(uint8_t channel, adc_callback_t callback) {
     if (channel > 4) return NULL;
 
-    adc_t *adc = malloc(sizeof(adc));
+    adc_t *adc = malloc(sizeof(adc_t));
     if (!adc) return NULL;
 
     adc->channel = channel;
+    adc->callback = callback;
 
     ADC_DIV = 1;
 
@@ -30,6 +39,10 @@ adc_t *adc_init(uint8_t channel) {
         uint8_t pin = 26 + channel;
         gpio_set_func(pin, GPIO_FUNC_XPI);
     }
+
+    adc_ptr = adc;
+    ADC_CS = ADC_CS_FIFO_EN | ADC_CS_IRQ_EN;
+    irq_enable(ADC_IRQ_FIFO_NUM);
 
     return adc;
 }
@@ -70,5 +83,17 @@ float adc_read_ref(adc_t *adc) {
 
 void adc_free(adc_t *adc) {
     if (!adc) return;
+
+    irq_disable(ADC_IRQ_FIFO_NUM);
+    ADC_CS = 0;
+    adc_ptr = NULL;
+    
     free(adc);
+}
+
+void ADC_FIFO_IRQ_Handler(void) {
+    uint16_t value = ADC_RESULT & 0xFF;
+
+    if (adc_ptr && adc_ptr->callback)
+        adc_ptr->callback(value);
 }

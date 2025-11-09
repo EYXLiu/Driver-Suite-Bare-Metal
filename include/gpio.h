@@ -30,8 +30,9 @@ typedef enum {
 } gpio_func_t;
 
 typedef struct gpio_inst_t gpio_t;
+typedef void (*gpio_callback_t)(uint8_t pin);
 
-gpio_t *gpio_init(uint8_t pin, gpio_mode_t mode);
+gpio_t *gpio_init(uint8_t pin, gpio_mode_t mode, gpio_callback_t callback);
 void gpio_write(gpio_t *gpio, gpio_value_t value);
 void gpio_write_pin(uint8_t pin, gpio_value_t value);
 uint8_t gpio_read(gpio_t *gpio);

@@ -6,8 +6,10 @@
 #include <stdbool.h>
 
 typedef struct i2c_inst_t i2c_t;
+typedef void (*i2c_rx_callback_t)(uint8_t data);
+typedef void (*i2c_tx_callback_t)(void);
 
-i2c_t *i2c_config(uint8_t sda, uint8_t scl, uint32_t baudrate);
+i2c_t *i2c_init(uint8_t sda, uint8_t scl, uint32_t baudrate, i2c_rx_callback_t rx_callback, i2c_tx_callback_t tx_callback);
 
 void i2c_write_byte(i2c_t *i2c, uint8_t addr, uint8_t data);
 uint8_t i2c_read_byte(i2c_t *i2c, uint8_t addr);

@@ -5,8 +5,9 @@
 #include <stdbool.h>
 
 typedef struct uart_inst_t uart_t;
+typedef void (*uart_callback_t)(uint8_t byte);
 
-uart_t *uart_init(uint8_t tx_pin, uint8_t rx_pin, uint32_t baudrate);
+uart_t *uart_init(uint8_t tx_pin, uint8_t rx_pin, uint32_t baudrate, uart_callback_t callback);
 
 void uart_write_byte(uart_t *uart, uint8_t byte);
 uint8_t uart_read_byte(uart_t *uart);

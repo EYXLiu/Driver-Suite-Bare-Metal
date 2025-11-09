@@ -5,8 +5,9 @@
 #include <stddef.h>
 
 typedef struct adc_inst_t adc_t;
+typedef void (*adc_callback_t)(uint16_t value);
 
-adc_t *adc_init(uint8_t channel);
+adc_t *adc_init(uint8_t channel, adc_callback_t callback);
 
 uint16_t adc_read_value(adc_t *adc);
 uint16_t adc_read_avg(adc_t *adc, uint8_t samples);

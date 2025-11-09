@@ -1,11 +1,12 @@
 #include "uart.h"
 #include "gpio.h"
+#include "irq.h"
 #include "addressmap.h"
 #include <stdlib.h>
 #include <stdint.h>
 
-#define UART0 ((volatile uart_inst_t *)UART0_BASE)
-#define UART1 ((volatile uart_inst_t *)UART1_BASE)
+#define UART0 ((volatile uint32_t *)UART0_BASE)
+#define UART1 ((volatile uint32_t *)UART1_BASE)
 
 #define UART_FR_TXFF (1 << 5)
 #define UART_FR_RXFE (1 << 4)
@@ -17,6 +18,14 @@
 
 #define UART_CLK 12000000u
 
+#define UART0_IRQ_NUM 20
+#define UART1_IRQ_NUM 21
+
+#define UART_IM(n) (*(volatile uint32_t *)((n) + 0x38))
+#define UART_ICR(n) (*(volatile uint32_t *)((n) + 0x44))
+#define UART_DC(n) (*(volatile uint32_t *)((n) + 0x00))
+#define UART_IE_RXIM (1 << 4)
+
 struct uart_inst_t {
     volatile uint32_t *CR;
     volatile uint32_t *IBRD;
@@ -26,14 +35,18 @@ struct uart_inst_t {
     volatile uint32_t *DR;
     uint8_t tx_pin;
     uint8_t rx_pin;
+    uart_callback_t callback;
 };
 
-uart_t *uart_init(uint8_t tx_pin, uint8_t rx_pin, uint32_t baudrate) {
+static uart_t *uart0_ptr;
+
+uart_t *uart_init(uint8_t tx_pin, uint8_t rx_pin, uint32_t baudrate, uart_callback_t callback) {
     uart_t* uart = malloc(sizeof(uart_t));
     if (!uart) return NULL;
 
     uart->tx_pin = tx_pin;
     uart->rx_pin = rx_pin;
+    uart->callback = callback;
 
     gpio_set_func(tx_pin, GPIO_FUNC_UART);
     gpio_set_func(rx_pin, GPIO_FUNC_UART);
@@ -49,6 +62,10 @@ uart_t *uart_init(uint8_t tx_pin, uint8_t rx_pin, uint32_t baudrate) {
 
     *uart->LCRH = UART_LCRH_WLEN_8;
     *uart->CR = UART_CR_UARTEN | UART_CR_TXE | UART_CR_RXE;
+
+    uart0_ptr = uart;
+    UART_IM(UART0) |= UART_IE_RXIM;
+    irq_enable(UART0_IRQ_NUM);
 
     return uart;
 }
@@ -81,5 +98,18 @@ int uart_read(uart_t *uart, char *buffer, int max_len) {
 
 void uart_free(uart_t *uart) {
     if (!uart) return;
+
+    irq_disable(UART0_IRQ_NUM);
+    UART_IM(UART0) &= ~UART_IE_RXIM;
+    uart0_ptr = NULL;
+    
     free(uart);
+}
+
+void UART0_IRQ_Handler(void) {
+    if (!uart0_ptr) return;
+
+    uint8_t byte = UART_DC(UART0) & 0xFF;
+    if (uart0_ptr->callback) uart0_ptr->callback(byte);
+    UART_ICR(UART0) = UART_IE_RXIM;
 }
