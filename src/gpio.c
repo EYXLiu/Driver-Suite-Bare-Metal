@@ -84,5 +84,6 @@ gpio_func_t gpio_get_func(uint8_t pin) {
 }
 
 void gpio_free(gpio_t *gpio) {
-    if (gpio) free(gpio);
+    if (!gpio) return;
+    free(gpio);
 }

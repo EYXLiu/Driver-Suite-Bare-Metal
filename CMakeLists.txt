@@ -10,6 +10,9 @@ add_executable(driver_suite
     src/spi.c
     src/i2c.c
     src/pwm.c
+    src/adc.c
+    src/dma.c
+    src/system.c
 )
 
 target_include_directories(driver_suite PRIVATE include)

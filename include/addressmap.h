@@ -18,4 +18,13 @@
 
 #define TIMER_BASE 0x40054000u
 
+#define ADC_BASE 0x4004C000u
+
+#define DMA_BASE ((uintptr_t)0x50000000u)
+
+#define RESET_BASE 0x4000C000u
+#define PLL_SYS_BASE 0x40028000u
+#define CLK_BASE 0x40008000u
+#define WATCHDOG_BASE 0x40058000u
+
 #endif

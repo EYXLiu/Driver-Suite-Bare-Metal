@@ -80,5 +80,6 @@ int uart_read(uart_t *uart, char *buffer, int max_len) {
 }
 
 void uart_free(uart_t *uart) {
-    if (uart) free(uart);
+    if (!uart) return;
+    free(uart);
 }
